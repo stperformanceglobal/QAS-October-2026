@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>QAS First 90 Days</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Mono:wght@500;600&family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+<style>
+/* Layout: a presenter's stage. A fixed nav bar of the eleven slides on top, one 16:9 slide scaled to fit beneath it,
+   and a speaker notes drawer that stays closed while screen sharing. One deliberate look in both host themes:
+   ink, paper and silver carry the slides; QAS maroon and QAS blue are touches; gold only marks the record. */
+:root {
+  --ink: #111214;
+  --ink-2: #1B1D20;
+  --paper: #F3F3F1;
+  --card: #FFFFFF;
+  --text: #3A3F45;
+  --muted: #6B7178;
+  --silver: #A7ACB1;
+  --rule: #DADCDE;
+  --gold: #C2992F;
+  --maroon: #981C41;
+  --maroon-soft: #E59AB0;
+  --blue: #156082;
+  --blue-soft: #7DB6D2;
+  --f-display: "Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  --f-body: "Inter", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: #0B0C0D; color: var(--paper); font-family: var(--f-body); display: flex; flex-direction: column; overflow: hidden; }
+
+/* nav bar */
+.bar { flex: none; display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: var(--ink); border-bottom: 1px solid #26292C; min-width: 0; }
+.who { font-family: var(--f-display); font-weight: 700; font-size: 18px; letter-spacing: .04em; text-transform: uppercase; color: var(--paper); white-space: nowrap; }
+.who span { color: var(--maroon-soft); }
+.nav { flex: 1; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+.nav::-webkit-scrollbar { display: none; }
+.nav button { flex: none; font: 500 11.5px/1 var(--f-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--silver); background: transparent; border: 0; border-bottom: 2px solid transparent; padding: 9px 9px 8px; cursor: pointer; white-space: nowrap; }
+.nav button b { color: #5E646A; font-weight: 600; margin-right: 5px; }
+.nav button:hover { color: var(--paper); }
+.nav button[aria-current="true"] { color: #FFFFFF; border-bottom-color: var(--maroon); }
+.nav button[aria-current="true"] b { color: var(--maroon-soft); }
+.tools { display: flex; gap: 6px; align-items: center; flex: none; }
+.tools button { font: 600 11px/1 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--paper); background: var(--ink-2); border: 1px solid #33373B; padding: 8px 10px; cursor: pointer; }
+.tools button:hover { border-color: var(--silver); }
+.tools button[aria-pressed="true"] { background: var(--maroon); border-color: var(--maroon); }
+.timer { font: 600 13px/1 var(--f-mono); color: var(--paper); min-width: 52px; text-align: right; font-variant-numeric: tabular-nums; }
+.timer.over { color: #F0867E; }
+button:focus-visible { outline: 2px solid var(--blue-soft); outline-offset: 2px; }
+
+/* stage */
+.viewport { flex: 1; min-height: 0; display: grid; place-items: center; padding: 16px; overflow: hidden; }
+.frame { position: relative; width: 1600px; height: 900px; transform-origin: center center; flex: none; }
+.slide { position: absolute; inset: 0; background: var(--paper); color: var(--text); padding: 76px 88px 84px; display: flex; flex-direction: column; gap: 30px; overflow: hidden; animation: in .3s ease both; }
+@keyframes in { from { opacity: .001; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .slide { animation: none; } }
+.slide[hidden], .notes[hidden] { display: none; }
+.slide.dark { background: var(--ink); color: #C9CDD1; }
+.slide.accent { background: var(--maroon); color: #F7EEF1; }
+.rule4 { position: absolute; left: 0; top: 0; right: 0; height: 8px; display: grid; grid-template-columns: repeat(4, 1fr); }
+.rule4 i:nth-child(1) { background: var(--ink); } .rule4 i:nth-child(2) { background: var(--silver); } .rule4 i:nth-child(3) { background: var(--gold); } .rule4 i:nth-child(4) { background: var(--maroon); }
+.dark .rule4 i:nth-child(1) { background: #2A2D31; }
+.accent .rule4 i:nth-child(4) { background: #F7EEF1; }
+.foot { position: absolute; left: 88px; right: 88px; bottom: 34px; display: flex; justify-content: space-between; font: 500 13px var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.dark .foot { color: #5E646A; } .accent .foot { color: #F2C7D3; }
+
+.eyebrow { font: 600 16px var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--maroon); margin: 0 0 10px; }
+.dark .eyebrow { color: var(--maroon-soft); } .accent .eyebrow { color: #F2C7D3; }
+h1, h2, h3 { margin: 0; font-family: var(--f-display); text-transform: uppercase; text-wrap: balance; }
+h2 { font-size: 66px; font-weight: 800; line-height: .98; color: var(--ink); letter-spacing: .005em; }
+.dark h2, .accent h2 { color: #FFFFFF; }
+h3 { font-size: 30px; font-weight: 700; line-height: 1.05; color: var(--ink); letter-spacing: .02em; }
+.dark h3, .accent h3 { color: #FFFFFF; }
+p { margin: 0; }
+.lead { font-size: 23px; line-height: 1.45; max-width: 62ch; }
+.body { font-size: 20px; line-height: 1.45; }
+.small { font-size: 16px; line-height: 1.45; color: var(--muted); }
+.mono { font-family: var(--f-mono); }
+
+.grid { display: grid; gap: 22px; }
+.g2 { grid-template-columns: 1fr 1fr; } .g3 { grid-template-columns: repeat(3, 1fr); } .g4 { grid-template-columns: repeat(4, 1fr); }
+.card { background: var(--card); padding: 26px 28px; display: flex; flex-direction: column; gap: 10px; min-width: 0; border-top: 5px solid var(--ink); }
+.card.m { border-top-color: var(--maroon); } .card.b { border-top-color: var(--blue); }
+.card .tag { font: 600 13px var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.card ul { margin: 0; padding-left: 22px; font-size: 19px; line-height: 1.5; }
+.xp { display: flex; gap: 22px; align-items: baseline; border-left: 4px solid var(--maroon); padding: 4px 0 4px 22px; }
+.xp .k { font: 600 14px var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--maroon); white-space: nowrap; }
+.xp p { font-size: 21px; line-height: 1.45; color: var(--ink); }
+.accent .xp { border-left-color: #FFFFFF; } .accent .xp .k, .accent .xp p { color: #FFFFFF; }
+.spacer { flex: 1; }
+
+/* cover */
+.cover h1 { font-size: 168px; font-weight: 800; line-height: .86; color: #FFFFFF; }
+.cover .sub { font-size: 34px; line-height: 1.3; color: #C9CDD1; max-width: 30ch; }
+.cover .meta { display: flex; justify-content: space-between; align-items: end; }
+.cover .name { font-family: var(--f-display); font-weight: 700; font-size: 44px; letter-spacing: .05em; text-transform: uppercase; color: #FFFFFF; }
+.cover .line { font-size: 26px; font-style: italic; color: var(--blue-soft); }
+
+/* corridor */
+.corridor { display: grid; grid-template-columns: 430px 1fr; gap: 48px; flex: 1; min-height: 0; }
+.route { position: relative; overflow: hidden; }
+.route svg { width: 100%; height: 100%; }
+.stops { display: flex; flex-direction: column; gap: 14px; justify-content: center; }
+.stop { display: grid; grid-template-columns: 150px 1fr; gap: 18px; padding: 12px 0; border-top: 1px solid var(--rule); align-items: baseline; }
+.stop .sp { font-family: var(--f-display); font-size: 26px; font-weight: 700; text-transform: uppercase; color: var(--ink); }
+.stop p { font-size: 18.5px; line-height: 1.45; }
+.stop p b { color: var(--ink); font-weight: 600; }
+
+/* windows timeline */
+.tl { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.tl-axis { position: relative; height: 30px; margin-left: 230px; border-bottom: 1px solid var(--rule); }
+.tl-axis span { white-space: nowrap; position: absolute; bottom: 6px; transform: translateX(-50%); font: 500 13px var(--f-mono); letter-spacing: .08em; color: var(--muted); }
+.tl-rows { position: relative; display: flex; flex-direction: column; gap: 30px; padding-top: 18px; }
+.tl-row { display: grid; grid-template-columns: 230px 1fr; align-items: center; min-height: 64px; }
+.tl-row .nm { font-family: var(--f-display); font-size: 27px; font-weight: 700; text-transform: uppercase; color: var(--ink); }
+.tl-row .nm small { display: block; font: 500 13px var(--f-mono); letter-spacing: .06em; text-transform: none; color: var(--muted); margin-top: 3px; }
+.tl-track { position: relative; height: 64px; background: repeating-linear-gradient(90deg, transparent 0 calc(100%/10 - 1px), #E6E7E8 calc(100%/10 - 1px) calc(100%/10)); }
+.seg { position: absolute; top: 12px; height: 40px; display: flex; align-items: center; padding: 0 10px; font: 600 13px var(--f-mono); letter-spacing: .04em; color: #FFFFFF; white-space: nowrap; overflow: hidden; }
+.seg.q { background: var(--blue); } .seg.f { background: var(--maroon); } .seg.e { background: var(--ink); }
+.band { position: absolute; top: 0; bottom: -6px; background: rgba(194,153,47,.16); border-left: 2px solid var(--gold); border-right: 2px solid var(--gold); pointer-events: none; }
+.band span { position: absolute; top: -26px; left: 50%; transform: translateX(-50%); font: 600 13px var(--f-mono); letter-spacing: .08em; color: #8A6A16; white-space: nowrap; text-transform: uppercase; }
+.games { position: absolute; top: -4px; bottom: -6px; width: 0; border-left: 2px dashed var(--ink); }
+.games span { position: absolute; top: -26px; left: -60px; width: 120px; text-align: center; font: 600 13px var(--f-mono); letter-spacing: .08em; color: var(--ink); text-transform: uppercase; }
+.legend { display: flex; gap: 26px; font: 500 14px var(--f-mono); color: var(--muted); }
+.legend i { display: inline-block; width: 14px; height: 14px; margin-right: 8px; vertical-align: -2px; }
+
+/* operating models table */
+.ops { width: 100%; border-collapse: collapse; font-size: 18px; line-height: 1.4; background: var(--card); }
+.ops th { font: 600 13px var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--paper); background: var(--ink); text-align: left; padding: 12px 16px; }
+.ops td { color: var(--text); padding: 14px 16px; border-top: 1px solid var(--rule); vertical-align: top; }
+.ops td:first-child { font-family: var(--f-display); font-size: 26px; font-weight: 700; text-transform: uppercase; color: var(--ink); white-space: nowrap; }
+.ops td b { color: var(--ink); font-weight: 600; }
+.pill { display: inline-block; font: 600 12px var(--f-mono); letter-spacing: .08em; text-transform: uppercase; padding: 4px 8px; border: 1px solid currentColor; margin-top: 6px; }
+.pill.t { color: var(--blue); } .pill.c { color: var(--maroon); }
+
+/* ladder */
+.ladder { display: flex; align-items: center; gap: 12px; }
+.ladder div { flex: 1; text-align: center; font-family: var(--f-display); font-size: 34px; font-weight: 700; text-transform: uppercase; padding: 16px; }
+.ladder .a1 { background: #E4E6E8; color: var(--ink); } .ladder .a2 { background: #C9CDD1; color: var(--ink); } .ladder .a3 { background: var(--blue); color: #FFFFFF; } .ladder .a4 { background: var(--maroon); color: #FFFFFF; }
+.ladder svg { flex: none; }
+
+/* lenses */
+.lens { width: 100%; border-collapse: collapse; font-size: 20px; background: var(--card); }
+.lens th { font: 600 13px var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--paper); background: var(--ink); text-align: left; padding: 12px 18px; }
+.lens td { padding: 10px 18px; border-top: 1px solid var(--rule); color: var(--ink); }
+.ops tr, .lens tr { background: var(--card); }
+.lens td:first-child { color: var(--maroon); font-weight: 600; }
+
+/* closing */
+.outs { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 56px; }
+.outs p { font-size: 26px; line-height: 1.4; border-top: 2px solid #33373B; padding-top: 16px; color: #E4E6E8; }
+.close { font-family: var(--f-display); font-size: 52px; font-weight: 700; line-height: 1.06; text-transform: uppercase; color: #FFFFFF; max-width: 26ch; }
+
+
+/* example prompts: button style callouts in the top right corner, click to mark as covered */
+.has-cues h2, .has-cues .eyebrow { max-width: 1020px; }
+.hdrow { display: flex; justify-content: space-between; align-items: flex-start; gap: 32px; }
+.hdrow > div:first-child { flex: 1; min-width: 0; }
+.cues { flex: none; width: 380px; display: flex; flex-wrap: wrap; justify-content: flex-end; align-content: flex-start; gap: 8px; z-index: 2; }
+.cues .cl { width: 100%; text-align: right; font: 600 12px var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.cue { font: 600 13px/1.2 var(--f-mono); letter-spacing: .04em; text-transform: uppercase; color: var(--maroon); background: var(--card); border: 1.5px solid var(--maroon); border-radius: 999px; padding: 8px 13px; cursor: pointer; text-align: left; }
+.cue:hover { background: #F7EEF1; }
+.cue[aria-pressed="true"] { background: var(--maroon); color: #FFFFFF; }
+.accent .cues .cl { color: #F2C7D3; }
+.accent .cue { color: #FFFFFF; background: transparent; border-color: #FFFFFF; }
+.accent .cue:hover { background: rgba(255,255,255,.12); }
+.accent .cue[aria-pressed="true"] { background: #FFFFFF; color: var(--maroon); }
+
+/* overlapping phases */
+.ovl { display: grid; grid-template-columns: 1fr 560px; gap: 32px; align-items: center; }
+.ovl-track { position: relative; height: 92px; }
+.ob { position: absolute; height: 26px; display: flex; align-items: center; padding: 0 12px; font: 600 13px var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: #FFFFFF; white-space: nowrap; }
+.o1 { top: 0; left: 0; width: 46%; background: var(--maroon); }
+.o2 { top: 33px; left: 28%; width: 46%; background: var(--blue); }
+.o3 { top: 66px; left: 54%; width: 46%; background: var(--ink); }
+
+/* time horizons */
+.hz { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
+.hz div { padding: 14px 20px; background: var(--card); border-top: 5px solid var(--ink); min-width: 0; }
+.hz div + div { border-left: 1px solid var(--rule); }
+.hz .h1 { border-top-color: var(--maroon); } .hz .h2 { border-top-color: var(--blue); }
+.hz b { display: block; font: 600 13px var(--f-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.hz span { display: block; font-size: 18px; line-height: 1.4; color: var(--ink); margin-top: 4px; }
+
+
+/* cover flow */
+.flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; position: relative; }
+.flow .st { position: relative; padding: 18px 26px 0 0; border-top: 3px solid #33373B; display: flex; flex-direction: column; gap: 6px; }
+.flow .st::before { content: ""; position: absolute; top: -9px; left: 0; width: 15px; height: 15px; border-radius: 50%; background: var(--ink); border: 3px solid var(--maroon-soft); }
+.flow .st:nth-child(2)::before, .flow .st:nth-child(4)::before { border-color: var(--blue-soft); }
+.flow .st:last-child::before { border-color: var(--gold); }
+.flow b { font-family: var(--f-display); font-size: 34px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #FFFFFF; }
+.flow span { font-size: 18px; line-height: 1.4; color: #A7ACB1; }
+
+/* value and challenge */
+.vc { display: grid; grid-template-columns: 1.1fr 1fr; gap: 22px; }
+.vc .card { gap: 4px; }
+.vcr { background: var(--maroon); border-top-color: var(--maroon); }
+.vcr .tag { color: #F2C7D3; }
+.vr { display: grid; grid-template-columns: 170px 1fr; gap: 16px; align-items: baseline; padding: 11px 0; border-top: 1px solid var(--rule); }
+.vcr .vr { border-top-color: rgba(255,255,255,.22); }
+.vr b { font-family: var(--f-display); font-size: 25px; font-weight: 700; text-transform: uppercase; letter-spacing: .02em; color: var(--ink); }
+.vr span { font-size: 19px; line-height: 1.4; color: var(--text); }
+.vcr .vr b { color: #FFFFFF; } .vcr .vr span { color: #F7EEF1; }
+
+/* on track close */
+.rhythm { font: 600 14px var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--blue); }
+.closer { background: var(--ink); color: #FFFFFF; font-family: var(--f-display); font-size: 26px; font-weight: 700; text-transform: uppercase; letter-spacing: .02em; padding: 16px 24px; }
+
+/* build animations: each slide assembles in sequence when it opens */
+.slide.play .a { animation: rise .55s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i) * 70ms + 60ms); }
+@keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+.slide.play .seg { animation: grow .8s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i, 0) * 120ms + 450ms); transform-origin: left center; }
+@keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.slide.play .band, .slide.play .games { animation: fadein .6s ease both; animation-delay: 1.2s; }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+.slide.play .ob { animation: slide-in .7s cubic-bezier(.2,.7,.2,1) both; }
+.slide.play .o2 { animation-delay: .9s; } .slide.play .o1 { animation-delay: .7s; } .slide.play .o3 { animation-delay: 1.1s; }
+@keyframes slide-in { from { opacity: 0; transform: translateX(-40px); } to { opacity: 1; transform: none; } }
+.slide.play .route .land { animation: fadein .8s ease both; }
+.slide.play .route .link { animation: fadein .6s ease both; animation-delay: 1s; }
+.slide.play .route circle { animation: pop .45s cubic-bezier(.3,1.6,.5,1) both; transform-box: fill-box; transform-origin: center; }
+.slide.play .route circle:nth-of-type(1) { animation-delay: .3s; } .slide.play .route circle:nth-of-type(2), .slide.play .route circle:nth-of-type(3) { animation-delay: .45s; }
+.slide.play .route circle:nth-of-type(4) { animation-delay: .6s; } .slide.play .route circle:nth-of-type(5) { animation-delay: .75s; } .slide.play .route circle:nth-of-type(6) { animation-delay: .9s; }
+@keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .slide.play .a, .slide.play .seg, .slide.play .band, .slide.play .games, .slide.play .ob, .slide.play .route circle { animation: none; } }
+
+/* notes drawer */
+.notes { flex: none; background: var(--ink); border-top: 1px solid #26292C; padding: 14px 16px 16px; max-height: 32vh; overflow-y: auto; }
+.notes .nh { display: flex; justify-content: space-between; gap: 12px; font: 600 11px var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--silver); margin-bottom: 8px; }
+.notes p { font-size: 16px; line-height: 1.6; color: #E4E6E8; max-width: 110ch; }
+.hint { font: 500 11px var(--f-mono); color: #5E646A; letter-spacing: .05em; }
+@media (max-width: 760px) { .who { display: none; } .tools .opt { display: none; } }
+</style>
+</head>
+<body>
+
+<div class="bar" role="toolbar" aria-label="Presentation controls">
+  <div class="who">Simon Thomas <span>· QAS</span></div>
+  <nav class="nav" id="nav" aria-label="Slides"></nav>
+  <div class="tools">
+    <button type="button" id="prev" aria-label="Previous slide">Prev</button>
+    <button type="button" id="next" aria-label="Next slide">Next</button>
+    <button type="button" id="notesBtn" class="opt" aria-pressed="false" title="Speaker notes (N)">Notes</button>
+    <button type="button" id="timerBtn" class="opt" aria-pressed="false" title="Start or pause the ten minute timer (T)">Timer</button>
+    <span class="timer opt" id="timer" aria-live="off">10:00</span>
+  </div>
+</div>
+
+<main class="viewport" id="viewport">
+<div class="frame" id="frame">
+
+<section class="slide dark cover" data-label="Open" data-notes="About 35 seconds. Thank you for the opportunity. These are four established sports, each with its own coaches, practitioners and a Performance Support Manager, with QAS as a partner. So they are not mine to run or rebuild. My job is to understand each partnership, find where QAS can genuinely add value and know whether each sport is on track. The sequence I would follow is on the screen: listen, map where I fit, connect QAS support to each plan, agree the plan and then review. It is grounded in how these four sports are actually set up, and one line runs through it: the athlete is a person first and an athlete second.">
+  <div class="rule4"><i></i><i></i><i></i><i></i></div>
+  <p class="eyebrow">Queensland Academy of Sport · Panel interview</p>
+  <div class="spacer"></div>
+  <h1>First<br>90 days</h1>
+  <p class="sub">High Performance Manager for Surfing, Skate, Paddle and Triathlon</p>
+  <div class="spacer"></div>
+  <div class="flow" aria-label="The sequence: listen, map, connect, agree, review">
+    <div class="st"><b>Listen</b><span>People, environments and dynamics</span></div>
+    <div class="st"><b>Map</b><span>Where I fit and what each sport needs</span></div>
+    <div class="st"><b>Connect</b><span>QAS support to each sport's plan</span></div>
+    <div class="st"><b>Agree</b><span>One plan and a review rhythm</span></div>
+    <div class="st"><b>Review</b><span>Progress, reporting and investment</span></div>
+  </div>
+  <div class="meta"><div><div class="name">Simon Thomas</div><p class="small" style="color:#A7ACB1">Thursday 15 October 2026</p></div></div>
+</section>
+
+<section class="slide has-cues" data-label="Start" data-notes="About 50 seconds. Here is how I read the role. Each sport owns its program: the NSO and head coach hold the plan and the What It Takes To Win, and QAS is a partner in it. Each sport has its own Performance Support Manager leading the practitioners and coaches, so hands on delivery from me is minimal to none. My job is the partnership itself: resourcing, alignment and executive reporting. The thread through all of it is aligning complex stakeholders who are each under pressure from different angles, some visible and some not. So the first job is understanding how the pieces fit before deciding where to add. It is the seat I sit in now, leading a system through influence with no direct athlete delivery.">
+  <div class="rule4"><i></i><i></i><i></i><i></i></div>
+  <div class="hdrow"><div><p class="eyebrow">Where I start</p><h2>The sport leads and QAS invests</h2></div>
+<div class="cues" aria-label="Examples I can speak to"><span class="cl">Ask me about</span><button type="button" class="cue" aria-pressed="false">Leading through influence</button><button type="button" class="cue" aria-pressed="false">Holding standards across sites</button><button type="button" class="cue" aria-pressed="false">Aligning complex stakeholders</button></div></div>
+  <div class="grid g3">
+    <div class="card"><h3>The sport owns the program</h3><p class="body">The NSO and head coach hold the plan and the What It Takes To Win. QAS is a partner in it, not its owner.</p></div>
+    <div class="card b"><h3>The PSM leads the people</h3><p class="body">Each sport's Performance Support Manager leads its practitioners and coaches. I support them and never go around them.</p></div>
+    <div class="card m"><h3>I hold the partnership</h3><p class="body">Resourcing, alignment and executive reporting, so QAS support does the most good in each sport.</p></div>
+  </div>
+  <div class="spacer"></div>
+  <div class="xp"><span class="k">From experience</span><p>Red Sox · 16 practitioners, six sites, no direct delivery</p></div>
+  <div class="foot"><span>Simon Thomas · First 90 days</span><span>02</span></div>
+</section>
+
+<section class="slide has-cues" data-label="Partnerships" data-notes="About 60 seconds. The four programs sit along one corridor from Brisbane to the Tweed, with the QAS hubs in Brisbane and at Carrara for connection, meetings and reporting. So I can physically be in every environment every week, which matters when being visible without delivering is part of the job. Each runs a different model. Skate is the most distributed, with a young group on tour, so safeguarding and wellbeing on the road are front of mind. Paddle is a centralised daily squad on the Gold Coast. Triathlon has just centralised at its new Miami hub, which changes what QAS needs to provide. Surfing is a hub and tour model at Casuarina, just over the border, with QAS practitioners already embedded. Working out what support each one actually needs, rather than applying one model to all four, is the core of the role.">
+  <div class="rule4"><i></i><i></i><i></i><i></i></div>
+  <div class="hdrow"><div><p class="eyebrow">Each program, environment and model</p><h2>Four partnerships, four models</h2></div>
+<div class="cues" aria-label="Examples I can speak to"><span class="cl">Ask me about</span><button type="button" class="cue" aria-pressed="false">Supporting a sport from outside</button><button type="button" class="cue" aria-pressed="false">Working across cultures and languages</button><button type="button" class="cue" aria-pressed="false">Olympic campaign planning</button></div></div>
+  <div class="corridor">
+    <div class="route" aria-hidden="true">
+      <svg viewBox="0 0 430 540" preserveAspectRatio="xMaxYMax slice">
+        <defs><linearGradient id="fadeL" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".22" stop-color="#fff" stop-opacity="1"/></linearGradient><mask id="landMask"><rect x="-60" y="-60" width="550" height="660" fill="url(#fadeL)"/></mask></defs>
+        <path class="land" mask="url(#landMask)" d="M-60.0 600.0L-60.0 584.6L-60.0 540.6L-60.0 502.5L-60.0 495.1L-60.0 487.6L-60.0 456.9L-60.0 451.9L-60.0 444.5L-60.0 437.9L-60.0 396.4L-60.0 382.3L-60.0 377.3L-60.0 374.0L-60.0 357.4L-60.0 352.5L-60.0 296.9L-60.0 276.2L-60.0 254.7L-60.0 244.7L-60.0 225.6L-60.0 215.7L-60.0 211.6L-60.0 200.8L-60.0 195.8L-60.0 190.0L-60.0 72.3L-60.0 7.6L-60.0 -60.0L-55.6 -60.0L-49.3 -60.0L-39.9 -60.0L-18.1 -60.0L-7.1 -60.0L3.8 -60.0L11.6 -60.0L17.9 -60.0L19.4 -60.0L22.6 -60.0L27.3 -60.0L49.1 -60.0L53.8 -60.0L55.4 -60.0L61.6 -60.0L60.1 -60.0L42.9 -60.0L39.8 -60.0L36.6 -60.0L35.1 -60.0L44.4 -60.0L67.9 -60.0L75.7 -60.0L77.3 -60.0L74.1 -60.0L67.9 -60.0L64.8 -60.0L67.9 -60.0L74.1 -60.0L77.3 -60.0L72.6 -60.0L56.9 -60.0L50.7 -60.0L47.6 -60.0L52.3 -60.0L41.3 -60.0L46.0 -60.0L52.3 -60.0L64.8 -60.0L58.5 -60.0L55.4 -60.0L60.1 -60.0L66.3 -60.0L75.7 -60.0L83.5 -60.0L100.7 -60.0L103.8 -60.0L107.0 -60.0L105.4 -60.0L102.3 -60.0L100.7 -60.0L103.8 -60.0L116.3 -60.0L117.9 -60.0L119.5 -60.0L124.1 -60.0L119.5 -60.0L117.9 -60.0L125.7 -60.0L127.3 -60.0L130.4 -60.0L139.8 -60.0L144.5 -60.0L155.4 -60.0L169.5 -60.0L180.4 -60.0L178.8 -60.0L171.0 -60.0L167.9 -60.0L160.1 -60.0L155.4 -60.0L152.3 -60.0L149.1 -60.0L146.0 -60.0L139.8 -60.0L138.2 -60.0L125.7 -60.0L124.1 -60.0L125.7 -60.0L130.4 -60.0L136.6 -60.0L142.9 -60.0L147.6 -60.0L150.7 -60.0L144.5 -60.0L141.3 -60.0L139.8 -60.0L141.3 -60.0L142.9 -60.0L157.0 -60.0L153.8 -60.0L157.0 -60.0L158.5 -60.0L161.6 -60.0L157.0 -60.0L155.4 -60.0L153.8 -60.0L155.4 -60.0L157.0 -60.0L180.4 -60.0L182.0 -60.0L174.1 -60.0L158.5 -60.0L141.3 -60.0L127.3 -60.0L114.8 -60.0L111.6 -60.0L108.5 -60.0L108.5 -52.0L116.3 -47.9L125.7 -47.1L130.4 -47.9L135.1 -49.6L139.8 -53.7L142.9 -50.4L141.3 -28.0L136.6 -22.2L130.4 -18.9L122.6 -12.3L117.9 -2.3L119.5 5.2L124.1 11.0L130.4 15.9L138.2 20.1L157.0 25.9L164.8 31.7L167.9 40.8L171.0 63.2L174.1 73.1L182.0 81.4L188.2 82.2L194.5 82.2L200.7 84.7L203.8 90.5L208.5 96.3L213.2 109.6L214.8 114.6L214.8 117.9L214.8 121.2L224.1 132.8L225.7 136.1L225.7 166.8L228.8 174.3L232.0 180.1L241.3 190.0L242.9 195.8L242.9 196.6L246.0 207.4L249.1 212.4L250.7 214.0L252.3 215.7L264.8 229.0L269.5 236.4L267.9 243.1L266.3 249.7L269.5 253.0L277.3 250.5L282.0 241.4L285.1 241.4L285.1 250.5L278.8 275.4L278.8 283.7L278.8 311.9L272.6 298.6L269.5 303.6L266.3 311.9L264.8 321.0L266.3 329.3L271.0 331.8L274.1 328.4L278.8 322.6L282.0 318.5L285.1 334.2L286.6 379.8L292.9 388.9L300.7 398.1L310.1 416.3L311.7 417.1L322.6 431.2L335.1 429.6L339.8 438.7L344.5 464.4L347.6 475.2L347.6 500.0L336.7 569.7L335.1 591.2L341.3 600.0L344.5 600.0L361.7 600.0L364.8 600.0L360.1 600.0L358.5 600.0L360.1 600.0L352.3 600.0L357.0 600.0L353.8 600.0L344.5 600.0L317.9 600.0L297.6 600.0L288.2 600.0L282.0 600.0L280.4 600.0L285.1 600.0L283.5 600.0L274.1 600.0L272.6 600.0L271.0 600.0L252.3 600.0L242.9 600.0L239.8 600.0L242.9 600.0L250.7 600.0L252.3 600.0L247.6 600.0L246.0 600.0L247.6 600.0L249.1 600.0L244.5 600.0L241.3 600.0L233.5 600.0L232.0 600.0L233.5 600.0L228.8 600.0L232.0 600.0L230.4 600.0L219.5 600.0L217.9 600.0L216.3 600.0L219.5 600.0L217.9 600.0L211.6 600.0L210.1 600.0L208.5 600.0L207.0 600.0L203.8 600.0L188.2 600.0L186.6 600.0L185.1 600.0L178.8 600.0L177.3 600.0L178.8 600.0L180.4 600.0L174.1 600.0L150.7 600.0L155.4 600.0L149.1 600.0L130.4 600.0L127.3 600.0L124.1 600.0L113.2 600.0L110.1 600.0L100.7 600.0L99.1 600.0L94.4 600.0L96.0 600.0L86.6 600.0L91.3 600.0L92.9 600.0L103.8 600.0L107.0 600.0L110.1 600.0L114.8 600.0L119.5 600.0L121.0 600.0L122.6 600.0L125.7 600.0L128.8 600.0L130.4 600.0L128.8 600.0L127.3 600.0L119.5 600.0L111.6 600.0L108.5 600.0L111.6 600.0L116.3 600.0L117.9 600.0L110.1 600.0L96.0 600.0L83.5 600.0L81.9 600.0L74.1 600.0L78.8 600.0L81.9 600.0L61.6 600.0L55.4 600.0L63.2 600.0L64.8 600.0L66.3 600.0L63.2 600.0L50.7 600.0L38.2 600.0L24.1 600.0L25.7 600.0L21.0 600.0L25.7 600.0L17.9 600.0L10.1 600.0L-0.9 600.0L6.9 600.0L5.4 600.0L-5.6 600.0L-19.6 600.0L-22.7 600.0L-18.1 600.0L-32.1 600.0L-41.5 600.0L-54.0 600.0L-60.0 600.0ZM302.3 56.5L308.5 57.4L330.4 56.5L321.0 76.4L311.7 100.5L289.8 206.6L286.6 207.4L280.4 207.4L274.1 208.2L269.5 209.9L266.3 209.1L261.6 197.5L261.6 190.0L264.8 175.9L264.8 174.3L267.9 171.8L269.5 169.3L269.5 165.1L269.5 161.0L264.8 154.4L264.8 150.2L264.8 143.6L269.5 128.7L269.5 122.0L269.5 113.7L264.8 94.7L266.3 87.2L275.7 74.0L278.8 66.5L278.8 52.4L280.4 45.8L283.5 42.5L289.8 44.9L294.5 49.1L299.1 53.2L302.3 56.5ZM269.5 19.2L271.0 11.0L267.9 -2.3L263.2 -14.7L260.1 -20.5L255.4 -25.5L252.3 -36.3L249.1 -60.0L252.3 -60.0L250.7 -60.0L247.6 -60.0L249.1 -60.0L258.5 -60.0L272.6 -60.0L282.0 -60.0L286.6 -60.0L292.9 -60.0L294.5 -60.0L275.7 -58.7L272.6 -38.0L272.6 -13.9L274.1 -8.1L278.8 4.3L278.8 11.0L278.8 19.2L277.3 26.7L275.7 28.4L269.5 19.2Z" fill="#E3E4E0" stroke="#C9CDD1" stroke-width="1.2" fill-rule="evenodd"/>
+        <path d="M330.6 424.6 L286.8 441.8 L221.7 466.4 L134.8 490.9 L26.3 520.4 L-125.6 540.0" fill="none" stroke="#6B7178" stroke-width="1.6" stroke-dasharray="7 6"/>
+        <path class="link" d="M118.8 125.2 L250.3 353.5" fill="none" stroke="#C2992F" stroke-width="2.5" stroke-dasharray="3 7" stroke-linecap="round"/>
+        <circle cx="91.4" cy="82.5" r="12" fill="#981C41" stroke="#F3F3F1" stroke-width="3" style="animation-delay:0.3s"/>
+        <circle cx="118.8" cy="125.2" r="14" fill="#111214" stroke="#F3F3F1" stroke-width="3" style="animation-delay:0.4s"/><circle cx="118.8" cy="125.2" r="5" fill="#C2992F" style="animation-delay:0.4s"/>
+        <circle cx="267.2" cy="326.5" r="12" fill="#156082" stroke="#F3F3F1" stroke-width="3" style="animation-delay:0.6s"/>
+        <circle cx="250.3" cy="353.5" r="14" fill="#111214" stroke="#F3F3F1" stroke-width="3" style="animation-delay:0.5s"/><circle cx="250.3" cy="353.5" r="5" fill="#C2992F" style="animation-delay:0.5s"/>
+        <circle cx="282.9" cy="378.5" r="12" fill="#156082" stroke="#F3F3F1" stroke-width="3" style="animation-delay:0.7s"/>
+        <circle cx="338.8" cy="490.9" r="12" fill="#981C41" stroke="#F3F3F1" stroke-width="3" style="animation-delay:0.85s"/>
+        <g font-family="IBM Plex Mono, Menlo, Consolas, monospace" letter-spacing="1" stroke="#E3E4E0" stroke-width="5" stroke-linejoin="round" paint-order="stroke">
+          <text x="111.4" y="87.5" text-anchor="start" font-size="15" fill="#111214">MILTON · SKATE</text>
+          <text x="140.8" y="126.2" text-anchor="start" font-size="15" fill="#111214" font-weight="600">QAS BRISBANE HUB</text>
+          <text x="140.8" y="144.2" text-anchor="start" font-size="12.5" fill="#5E646A">connection, meetings, reporting</text>
+          <text x="247.2" y="331.5" text-anchor="end" font-size="15" fill="#111214">GOLD COAST · PADDLE</text>
+          <text x="228.3" y="358.5" text-anchor="end" font-size="15" fill="#111214" font-weight="600">CARRARA · QAS</text>
+          <text x="262.9" y="387.5" text-anchor="end" font-size="15" fill="#111214">MIAMI · TRIATHLON</text>
+          <text x="318.8" y="495.9" text-anchor="end" font-size="15" fill="#111214">CASUARINA · SURFING</text>
+          <text x="70" y="478" font-size="14" fill="#6B7178">QLD</text>
+          <text x="70" y="530" font-size="14" fill="#6B7178">NSW</text>
+        </g>
+      </svg>
+    </div>
+    <div class="stops">
+      <div class="stop"><span class="sp">Skate</span><p><b>Skate Australia.</b> Distributed, young athletes, Gold Coast street facility and the World Skateboarding Tour.<br><span class="pill t">World touring</span></p></div>
+      <div class="stop"><span class="sp">Paddle</span><p><b>Paddle Australia.</b> Centralised daily squad on the Gold Coast, sprint and para, building to World Cups and Worlds.<br><span class="pill c">World championship</span></p></div>
+      <div class="stop"><span class="sp">Triathlon</span><p><b>AusTriathlon.</b> Newly centralised at the Miami hub with its Ascent Academy, racing the Championship Series.<br><span class="pill c">World championship</span></p></div>
+      <div class="stop"><span class="sp">Surfing</span><p><b>Surfing Australia.</b> High Performance Centre at Casuarina with QAS practitioners embedded, on the Championship Tour.<br><span class="pill t">World touring</span></p></div>
+    </div>
+  </div>
+  <div class="xp"><span class="k">From experience</span><p>Brazil and Singapore · supporting national programs from outside</p></div>
+  <div class="foot"><span>Schematic, not to scale · Public NSO and QAS sources</span><span>03</span></div>
+</section>
+
+<section class="slide" data-label="Timing" data-notes="About 40 seconds. All four sports are already inside their Los Angeles qualification windows. Canoe sprint ranking closes first, at the end of 2027. Triathlon runs to May 2028, skate ranks on the World Skateboarding Tour to March 2028 and surfing's Championship Tour ranking starts in August 2027. My first ninety days land in the Australian summer, the planning window before the decisive 2027 season. So this is not a quiet orientation. It is about protecting what works and making sure the 2027 plans are resourced and aligned before the season starts.">
+  <div class="rule4"><i></i><i></i><i></i><i></i></div>
+  <div><p class="eyebrow">Timing</p><h2>Ninety days inside live qualification windows</h2></div>
+  <div class="tl" id="tl">
+    <div class="tl-axis" id="tlAxis"></div>
+    <div class="tl-rows" id="tlRows" style="margin-top:30px"></div>
+  </div>
+  <div class="legend"><span><i style="background:var(--blue)"></i>Ranking or qualifying window</span><span><i style="background:var(--maroon)"></i>Final qualifying phase</span><span><i style="background:var(--ink)"></i>Qualifying event</span><span><i style="background:rgba(194,153,47,.35);border:1px solid var(--gold)"></i>First 90 days, on a November start</span></div>
+  <div class="foot"><span>Sources: ICF, World Triathlon, ISA and World Skate LA28 qualification systems</span><span>04</span></div>
+</section>
+
+<section class="slide has-cues" data-label="90 days" data-notes="About 60 seconds. The three phases overlap. As understanding builds, each lays the foundations of the next. Nothing is actioned before it is understood and agreed, but priority decisions do not wait sixty days. The first month is about people: the athletes, coaches, PSMs and NSO leads, and the dynamics between people and functions. Building those connections quickly is one of my strengths, and if appropriate I would value a conversation with whoever held the role before me. I also map where I fit in each scenario: where I am responsible, accountable, need to influence without authority, or simply need to stay informed. The second month maps QAS support against each 2027 plan. By day ninety you would see a one page plan each sport recognises as its own, a review rhythm running, QAS investment mapped to each sport&#x27;s priorities and an honest baseline for QAS HP leadership.">
+  <div class="rule4"><i></i><i></i><i></i><i></i></div>
+  <div class="hdrow"><div><p class="eyebrow">First 90 days</p><h2>Listen, map, then agree</h2></div>
+<div class="cues" aria-label="Examples I can speak to"><span class="cl">Ask me about</span><button type="button" class="cue" aria-pressed="false">Building trust quickly</button><button type="button" class="cue" aria-pressed="false">Mapping decision rights</button><button type="button" class="cue" aria-pressed="false">Learning a new sport fast</button><button type="button" class="cue" aria-pressed="false">Listening before acting</button></div></div>
+  <div class="grid g3" style="gap:0">
+    <div class="card m"><span class="tag">Days 1 to 30</span><h3 style="font-size:40px">Listen and learn</h3><ul><li>Athletes, staff and the dynamics between functions</li><li>Map where I fit in each scenario</li><li>Every environment, Milton to Casuarina</li><li>Agreements, plans and QAS spend</li></ul></div>
+    <div class="card b" style="border-left:1px solid var(--rule)"><span class="tag">Days 31 to 60</span><h3 style="font-size:40px">Map and connect</h3><ul><li>QAS support against each 2027 plan</li><li>What each partner needs from QAS</li><li>Shared needs, touring or centralised</li><li>Reporting that informs decisions</li></ul></div>
+    <div class="card" style="border-left:1px solid var(--rule)"><span class="tag">Days 61 to 90 · what you would see</span><h3 style="font-size:40px">Agree and act</h3><ul><li>One page plan each sport owns</li><li>A review and reporting rhythm</li><li>QAS investment mapped to 2027</li><li>An honest baseline for QAS HP leadership</li></ul></div>
+  </div>
+  <div class="ovl" aria-label="The three phases overlap">
+    <div class="ovl-track"><span class="ob o1">Listen and learn</span><span class="ob o2">Map and connect</span><span class="ob o3">Agree and act</span></div>
+    <p class="body" style="color:var(--ink)">The phases overlap. As understanding builds, each one lays the foundations of the next. Nothing is actioned before it is understood and agreed, but priority decisions do not wait sixty days.</p>
+  </div>
+  <div class="foot"><span>Simon Thomas · First 90 days</span><span>05</span></div>
+</section>
+
+<section class="slide has-cues" data-label="Value" data-notes="About 70 seconds. Sports with their own leadership do not need another voice for its own sake, so my test is simple: does QAS support help the sport's people make better decisions, or remove something in their way? I expect to add value in four areas. Resourcing that follows each sport's winning priorities. One plan per athlete across QAS and the NSO. Executive reporting that is concise, honest and early. And supporting the four PSMs as a peer group, with coach development led through them. Challenge is part of that value, but only when the relationship can carry it, because I hold no line authority over the sport's people. So I agree early how each PSM and coach wants to be challenged, I ask before I tell and bring evidence, and I raise things early so caution never compounds. Everyone is under pressure from different angles, and understanding that pressure is what lets the challenge land.">
+  <div class="rule4"><i></i><i></i><i></i><i></i></div>
+  <div class="hdrow"><div><p class="eyebrow">Where I add value and how I challenge</p><h2>Add value, earn the right to challenge</h2></div>
+<div class="cues" aria-label="Examples I can speak to"><span class="cl">Ask me about</span><button type="button" class="cue" aria-pressed="false">Integrated athlete planning</button><button type="button" class="cue" aria-pressed="false">Coach feedback systems</button><button type="button" class="cue" aria-pressed="false">Being a trusted sounding board</button><button type="button" class="cue" aria-pressed="false">Unseen pressure on staff</button></div></div>
+  <p class="lead" style="font-style:italic;color:var(--ink);border-left:4px solid var(--blue);padding-left:22px;max-width:none">The test: does QAS support help the sport's people make better decisions, or remove something in their way?</p>
+  <div class="vc">
+    <div class="card vcl"><span class="tag">Where I add value</span>
+      <div class="vr"><b>Resourcing</b><span>Investment follows each sport's winning priorities</span></div>
+      <div class="vr"><b>Alignment</b><span>One plan per athlete across QAS and the NSO</span></div>
+      <div class="vr"><b>Reporting</b><span>Concise, honest and early to QAS HP leadership</span></div>
+      <div class="vr"><b>PSM support</b><span>A peer group, with coach development led through them</span></div>
+    </div>
+    <div class="card vcr"><span class="tag">How challenge lands</span>
+      <div class="vr"><b>Agree it early</b><span>Ask each PSM and coach how they want to be challenged</span></div>
+      <div class="vr"><b>Ask, then show</b><span>Questions and evidence, in private, support in public</span></div>
+      <div class="vr"><b>Raise it early</b><span>Name small concerns before caution compounds</span></div>
+    </div>
+  </div>
+  <div class="xp"><span class="k">From experience</span><p>Crusaders one plan · Western Force sounding board</p></div>
+  <div class="foot"><span>Simon Thomas · First 90 days</span><span>06</span></div>
+</section>
+
+<section class="slide has-cues" data-label="Step in" data-notes="About 55 seconds. Knowing when to be involved is a judgement, so I use a simple ladder: observe, ask, offer and only then act, with most of my involvement on the left of it. Part of that judgement is reading people. Some need ownership, others need clarity or a responsibility taken off them so they can act, and getting that right often resolves blurred lines between roles. I step back from daily coaching and practitioner work, decisions inside the agreed plan and anywhere my voice would only add noise. I step in on athlete welfare, safety or integrity, investment not serving the plan, QAS and the NSO pulling apart, or a barrier beyond the sport's reach. Where lines blur, my first move is to help people have that ownership conversation themselves.">
+  <div class="rule4"><i></i><i></i><i></i><i></i></div>
+  <div class="hdrow"><div><p class="eyebrow">When to become involved and when to step back</p><h2>Observe, ask, offer, act</h2></div>
+<div class="cues" aria-label="Examples I can speak to"><span class="cl">Ask me about</span><button type="button" class="cue" aria-pressed="false">Protecting what works</button><button type="button" class="cue" aria-pressed="false">Building from nothing</button><button type="button" class="cue" aria-pressed="false">Ownership versus clarity</button><button type="button" class="cue" aria-pressed="false">Owning the system, not the session</button></div></div>
+  <div class="ladder" aria-label="Observe, then ask, then offer, then act">
+    <div class="a1">Observe</div><svg width="34" height="22" viewBox="0 0 34 22" aria-hidden="true"><path d="M0 7h20V0l14 11-14 11v-7H0z" fill="#A7ACB1"/></svg>
+    <div class="a2">Ask</div><svg width="34" height="22" viewBox="0 0 34 22" aria-hidden="true"><path d="M0 7h20V0l14 11-14 11v-7H0z" fill="#A7ACB1"/></svg>
+    <div class="a3">Offer</div><svg width="34" height="22" viewBox="0 0 34 22" aria-hidden="true"><path d="M0 7h20V0l14 11-14 11v-7H0z" fill="#A7ACB1"/></svg>
+    <div class="a4">Act</div>
+  </div>
+  <p class="body" style="color:var(--ink);font-size:21px">Some people need ownership. Others need clarity, or a responsibility taken off them, so they can act.</p>
+  <div class="grid g2">
+    <div class="card b"><h3>I step back from</h3><ul><li>Daily coaching and practitioner work</li><li>Decisions inside the agreed plan</li><li>Anywhere my voice only adds noise</li></ul></div>
+    <div class="card m"><h3>I step in on</h3><ul><li>Athlete welfare, safety or integrity</li><li>Investment not serving the plan</li><li>QAS and the NSO pulling apart</li><li>Barriers beyond the sport's reach</li></ul></div>
+  </div>
+  <div class="xp"><span class="k">From experience</span><p>Red Sox system · Crusaders protect · AG Rugby build</p></div>
+  <div class="foot"><span>Simon Thomas · First 90 days</span><span>07</span></div>
+</section>
+
+<section class="slide has-cues" data-label="On track" data-notes="About 65 seconds. Every program runs across three horizons at once. Now is the daily training environment, a mix of development and performance. Next is the peak events and qualification windows this season. Later is the progress that sets funding and support towards 2032. My job is to support the present well enough to perform while the evidence for the next decision builds, so long term plans are resourced early rather than changed late. To read that I agree five lenses with each PSM and keep them in one report: performance, progression, availability, environment and investment. Monthly with each PSM, quarterly with each NSO and one concise report to QAS HP leadership, rated in words as well as colour. The sport leads and QAS invests. My job is to make that partnership worth more to every athlete. Thank you, and I am happy to take your questions.">
+  <div class="rule4"><i></i><i></i><i></i><i></i></div>
+  <div class="hdrow"><div><p class="eyebrow">Is each program on track?</p><h2>Five lenses, one report</h2></div>
+<div class="cues" aria-label="Examples I can speak to"><span class="cl">Ask me about</span><button type="button" class="cue" aria-pressed="false">Testing and reporting systems</button><button type="button" class="cue" aria-pressed="false">Applied research partnerships</button><button type="button" class="cue" aria-pressed="false">Data coaches can act on</button></div></div>
+  <div class="hz">
+    <div class="h1"><b>Now</b><span>The daily training environment, a mix of development and performance</span></div>
+    <div class="h2"><b>Next</b><span>Peak events and qualification windows this season</span></div>
+    <div><b>Later</b><span>Progress that sets funding and support towards 2032</span></div>
+  </div>
+  <table class="lens">
+    <tr><th style="width:20%">Lens</th><th style="width:46%">The question</th><th style="width:34%">Evidence</th></tr>
+    <tr><td>Performance</td><td>Where is each athlete against the winning benchmark?</td><td>What It Takes To Win</td></tr>
+    <tr><td>Progression</td><td>Is each athlete inside the LA28 picture, and on course for 2032?</td><td>Rankings and championship results</td></tr>
+    <tr><td>Availability</td><td>Are athletes healthy and able to train and compete?</td><td>Load, injury and illness</td></tr>
+    <tr><td>Environment</td><td>Are coaches, staff and athletes thriving?</td><td>PSM check ins and reviews</td></tr>
+    <tr><td>Investment</td><td>Is QAS support producing a return for the sport?</td><td>Spend against the plan</td></tr>
+  </table>
+  <p class="rhythm">Monthly with each PSM · quarterly with each NSO · one concise report to QAS HP leadership</p>
+  <p class="closer">The sport leads and QAS invests. My job is to make that partnership worth more to every athlete.</p>
+  <div class="foot"><span>Simon Thomas · First 90 days</span><span>08</span></div>
+</section>
+
+</div>
+</main>
+
+<aside class="notes" id="notes" hidden>
+  <div class="nh"><span id="notesTitle">Speaker notes</span><span class="hint">Arrows or click the bar to move · N notes · T timer</span></div>
+  <p id="notesText"></p>
+</aside>
+
+<script>
+(function () {
+  var frame = document.getElementById("frame");
+  var viewport = document.getElementById("viewport");
+  var slides = Array.prototype.slice.call(frame.querySelectorAll(".slide"));
+  var nav = document.getElementById("nav");
+  var notes = document.getElementById("notes");
+  var notesText = document.getElementById("notesText");
+  var notesTitle = document.getElementById("notesTitle");
+  var notesBtn = document.getElementById("notesBtn");
+  var i = 0;
+
+  slides.forEach(function (s, n) {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.innerHTML = "<b>" + String(n + 1).padStart(2, "0") + "</b>" + s.dataset.label;
+    b.addEventListener("click", function () { go(n); });
+    nav.appendChild(b);
+  });
+  var tabs = Array.prototype.slice.call(nav.children);
+
+  function fit() {
+    var w = viewport.clientWidth - 32, h = viewport.clientHeight - 32;
+    var s = Math.max(0.1, Math.min(w / 1600, h / 900));
+    frame.style.transform = "scale(" + s + ")";
+    frame.style.margin = ((900 * s - 900) / 2) + "px " + ((1600 * s - 1600) / 2) + "px";
+  }
+
+
+  /* tag the pieces of each slide so they assemble in order */
+  var ITEM = ".card, .stop, .tl-row, tr, .ladder > div, .hz > div, .cue, .st, .vr, .grid > div";
+  var FLAT = ["hdrow", "corridor", "vc", "stops", "cues"];
+  function tagAll() {
+  slides.forEach(function (s) {
+    var n = 0;
+    function tag(el) { el.classList.add("a"); el.style.setProperty("--i", n++); }
+    function walk(el) {
+      if (FLAT.some(function (c) { return el.classList.contains(c); })) { Array.prototype.forEach.call(el.children, walk); return; }
+      if (el.matches(ITEM)) { tag(el); if (el.classList.contains("card")) Array.prototype.forEach.call(el.querySelectorAll(".vr"), tag); return; }
+      var inner = Array.prototype.filter.call(el.querySelectorAll(ITEM), function (x) { return !x.parentElement.closest(ITEM) || x.parentElement.closest(ITEM) === el; });
+      if (inner.length && !el.matches("table")) { inner.forEach(tag); return; }
+      if (el.matches("table")) { Array.prototype.forEach.call(el.querySelectorAll("tr"), tag); return; }
+      if (el.matches(".rule4, .foot, .spacer, .cl")) return;
+      tag(el);
+    }
+    Array.prototype.forEach.call(s.children, walk);
+    Array.prototype.forEach.call(s.querySelectorAll(".seg"), function (g, k) { g.style.setProperty("--i", k); });
+  });
+  }
+  function play(s) { s.classList.remove("play"); void s.offsetWidth; s.classList.add("play"); }
+
+  function go(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, k) { s.hidden = k !== i; });
+    tabs.forEach(function (t, k) { t.setAttribute("aria-current", k === i ? "true" : "false"); });
+    tabs[i].scrollIntoView({ block: "nearest", inline: "nearest" });
+    notesTitle.textContent = "Speaker notes · " + String(i + 1).padStart(2, "0") + " " + slides[i].dataset.label;
+    notesText.textContent = slides[i].dataset.notes || "";
+    try { history.replaceState(null, "", "#s" + (i + 1)); } catch (e) {}
+    play(slides[i]);
+    requestAnimationFrame(fit);
+  }
+
+  document.getElementById("prev").addEventListener("click", function () { go(i - 1); });
+  document.getElementById("next").addEventListener("click", function () { go(i + 1); });
+  function toggleNotes() {
+    notes.hidden = !notes.hidden;
+    notesBtn.setAttribute("aria-pressed", notes.hidden ? "false" : "true");
+    requestAnimationFrame(fit);
+  }
+  notesBtn.addEventListener("click", toggleNotes);
+
+  /* ten minute timer */
+  var timerEl = document.getElementById("timer"), timerBtn = document.getElementById("timerBtn");
+  var left = 600, running = false, tick = null;
+  function draw() {
+    var a = Math.abs(left), m = Math.floor(a / 60), s = a % 60;
+    timerEl.textContent = (left < 0 ? "-" : "") + m + ":" + String(s).padStart(2, "0");
+    timerEl.classList.toggle("over", left < 0);
+  }
+  function toggleTimer() {
+    running = !running;
+    timerBtn.setAttribute("aria-pressed", running ? "true" : "false");
+    if (running) { tick = setInterval(function () { left--; draw(); }, 1000); }
+    else { clearInterval(tick); }
+  }
+  timerBtn.addEventListener("click", toggleTimer);
+  timerEl.addEventListener("dblclick", function () { left = 600; draw(); });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+    if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") { e.preventDefault(); go(i + 1); }
+    else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); go(i - 1); }
+    else if (e.key === "Home") go(0);
+    else if (e.key === "End") go(slides.length - 1);
+    else if (e.key === "n" || e.key === "N") toggleNotes();
+    else if (e.key === "t" || e.key === "T") toggleTimer();
+  });
+  window.addEventListener("resize", fit);
+  frame.querySelectorAll(".cue").forEach(function (b) {
+    b.addEventListener("click", function () { b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true"); });
+  });
+
+
+  /* qualification timeline, drawn to scale from the dates */
+  var START = Date.UTC(2026, 0, 1), END = Date.UTC(2028, 7, 1);
+  function pct(y, m, d) { return ((Date.UTC(y, m - 1, d) - START) / (END - START)) * 100; }
+  var axis = document.getElementById("tlAxis");
+  [[2026,1,"Jan 26"],[2026,7,"Jul 26"],[2027,1,"Jan 27"],[2027,7,"Jul 27"],[2028,1,"Jan 28"]].forEach(function (t) {
+    var s = document.createElement("span"); s.style.left = pct(t[0], t[1], 1) + "%"; s.textContent = t[2]; axis.appendChild(s);
+  });
+  var rows = [
+    { n: "Paddle", sub: "Canoe sprint ranking", segs: [["q", [2026,4,20], [2027,12,31], "Ranking: 2026 and 2027 Worlds, World Cups"]] },
+    { n: "Triathlon", sub: "Individual and mixed relay", segs: [["q", [2026,5,18], [2028,5,18], "Qualification period, best 12 results"]] },
+    { n: "Skate", sub: "Park and street", segs: [["q", [2026,6,1], [2028,3,31], "World Skateboarding Tour ranking"], ["f", [2028,4,1], [2028,6,11], "OQS"]] },
+    { n: "Surfing", sub: "ISA Games and Championship Tour", segs: [["e", [2026,5,1], [2026,6,15], "ISA 26"], ["e", [2027,5,1], [2027,6,15], "ISA 27"], ["q", [2027,8,15], [2028,6,15], "Championship Tour ranking"]] }
+  ];
+  var holder = document.getElementById("tlRows");
+  rows.forEach(function (r) {
+    var row = document.createElement("div"); row.className = "tl-row";
+    row.innerHTML = '<div class="nm">' + r.n + "<small>" + r.sub + "</small></div>";
+    var track = document.createElement("div"); track.className = "tl-track";
+    r.segs.forEach(function (sg) {
+      var a = pct.apply(null, sg[1]), b = pct.apply(null, sg[2]);
+      var el = document.createElement("div"); el.className = "seg " + sg[0];
+      el.style.left = a + "%"; el.style.width = (b - a) + "%"; el.textContent = sg[3]; el.title = sg[3];
+      track.appendChild(el);
+    });
+    row.appendChild(track); holder.appendChild(row);
+  });
+  var overlay = document.createElement("div");
+  overlay.style.cssText = "position:absolute;left:230px;right:0;top:0;bottom:0;pointer-events:none";
+  var band = document.createElement("div"); band.className = "band";
+  var b0 = pct(2026, 11, 2), b1 = pct(2027, 1, 31);
+  band.style.left = b0 + "%"; band.style.width = (b1 - b0) + "%"; band.innerHTML = "<span>First 90 days</span>";
+  var games = document.createElement("div"); games.className = "games";
+  games.style.left = pct(2028, 7, 14) + "%"; games.innerHTML = "<span>LA28</span>";
+  overlay.appendChild(band); overlay.appendChild(games);
+  holder.style.position = "relative"; holder.appendChild(overlay);
+  overlay.style.left = "230px";
+
+  var start = 0, m = /^#s(\d+)$/.exec(location.hash || "");
+  if (m) start = parseInt(m[1], 10) - 1;
+  tagAll();
+  go(start);
+  fit();
+})();
+</script>
+</body>
+</html>
