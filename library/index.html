@@ -8,51 +8,68 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-:root{--ink:#111214;--silver:#A7ACB1;--gold:#C2992F;--pou:#2E6E5E;--mar:#981C41;--blue:#156082;--text:#2B2F33;--mute:#6B7178;--rule:#DADDE0;--tint:#F4F4F2;--bg:#ECECE9;--card:#fff}
+<style>:root{--ink:#111214;--silver:#A7ACB1;--gold:#C2992F;--pou:#2E6E5E;--mar:#981C41;--blue:#156082;--text:#2B2F33;--mute:#6B7178;--line:#E2E1DC;--bg:#F5F4F0;--card:#fff}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
 .rule{display:flex;height:6px}.rule i{flex:1}
-.rule i:nth-child(1){background:var(--ink)}.rule i:nth-child(2){background:var(--silver)}.rule i:nth-child(3){background:var(--gold)}.rule i:nth-child(4){background:var(--pou)}
-header{background:var(--ink);color:#fff;padding:26px 16px 24px}
-.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
-header .wrap{padding:0}
-.lab{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--silver)}
-h1{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:clamp(38px,7vw,64px);line-height:.95;text-transform:uppercase;margin:8px 0 6px}
-.sub{color:#C9CDD1;font-size:14px}
-main{padding:24px 0 40px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
-.tile{all:unset;cursor:pointer;display:flex;flex-direction:column;background:var(--card);border-top:5px solid var(--c);box-shadow:0 1px 2px rgba(0,0,0,.08);transition:transform .15s,box-shadow .15s;overflow:hidden}
-.tile:hover,.tile:focus-visible{transform:translateY(-3px);box-shadow:0 8px 22px rgba(0,0,0,.14)}
-.tile:focus-visible{outline:3px solid var(--c);outline-offset:2px}
-.thumb{height:210px;background:var(--tint) center top/cover no-repeat;border-bottom:1px solid var(--rule)}
-.thumb.wide{background-size:contain;background-position:center;background-color:var(--ink)}
-.meta{padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px;flex:1}
-.kind{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:var(--c)}
-.name{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:25px;line-height:1;text-transform:uppercase;color:var(--ink)}
-.desc{font-size:13px;color:var(--mute);line-height:1.4}
-footer{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--mute);text-align:center;padding:0 16px 28px}
-/* viewer */
+.rule i:nth-child(1){background:#2A2C30}.rule i:nth-child(2){background:var(--silver)}.rule i:nth-child(3){background:var(--gold)}.rule i:nth-child(4){background:var(--pou)}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+header{background:var(--ink);color:#fff;padding:30px 0 34px;border-bottom:4px solid var(--blue)}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold)}
+h1{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:clamp(36px,6vw,58px);line-height:.95;text-transform:uppercase;margin:10px 0 12px}
+.lede{color:#C9CDD1;font-size:15px;line-height:1.55;max-width:560px}
+main{padding:40px 24px 24px}
+.section-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px}
+.section-head h2{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:26px;text-transform:uppercase;color:var(--ink)}
+.count{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--mute)}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+@media (max-width:1100px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:820px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.grid{grid-template-columns:1fr}}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .18s,transform .18s,border-color .18s}
+.tile:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(17,18,20,.1);border-color:var(--c)}
+.tile.featured{border:2px solid var(--gold)}
+.art{position:relative;height:196px;background:var(--c);border-bottom:3px solid var(--gold);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;overflow:hidden}
+.art img{height:118px;width:auto;max-width:78%;object-fit:contain;box-shadow:0 6px 18px rgba(0,0,0,.35);background:#fff}
+.art img.wide{height:96px}
+.art span{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#fff}
+.art span::after{content:"";display:block;width:26px;height:2px;background:var(--gold);margin:6px auto 0}
+.body{padding:16px 16px 18px;display:flex;flex-direction:column;gap:12px;flex:1}
+.org{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--c2)}
+h3{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:24px;line-height:1;text-transform:uppercase;color:var(--ink);margin-top:4px}
+.desc{font-size:14px;line-height:1.5;color:#4A5057}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font-size:12.5px;font-weight:600;color:var(--ink);background:#EFEDE6;border-radius:999px;padding:4px 11px}
+.open{all:unset;box-sizing:border-box;margin-top:auto;display:flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:12px 16px;border-radius:12px;background:var(--c);color:#fff;font-weight:600;font-size:15.5px;cursor:pointer;text-align:center;transition:filter .18s}
+.open:hover{filter:brightness(1.15)}
+.open .arrow{color:var(--gold);transition:transform .18s}
+.open:hover .arrow{transform:translateX(3px)}
+.open:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+footer{background:var(--ink);color:#fff;margin-top:30px;padding:24px 0}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--silver)}
 .viewer{position:fixed;inset:0;background:rgba(17,18,20,.86);display:none;flex-direction:column;z-index:10}
 .viewer.on{display:flex}
 .bar{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--ink);color:#fff;border-top:5px solid var(--vc,var(--gold))}
 .bar .t{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:22px;text-transform:uppercase;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bar a,.bar button{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#fff;background:transparent;border:1px solid #5A5F66;padding:7px 10px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.bar a,.bar button{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#fff;background:transparent;border:1px solid #5A5F66;border-radius:8px;padding:7px 10px;cursor:pointer;text-decoration:none;white-space:nowrap}
 .bar a:hover,.bar button:hover{border-color:#fff}
 .frame{flex:1;padding:12px;display:flex}
-iframe{flex:1;width:100%;border:0;background:#fff}
-@media (max-width:600px){.bar a.dl{display:none}.thumb{height:180px}}
+iframe{flex:1;width:100%;border:0;background:#fff;border-radius:6px}
+@media (max-width:600px){.bar a.dl{display:none}}
 </style>
 </head>
 <body>
 <div class="rule"><i></i><i></i><i></i><i></i></div>
 <header><div class="wrap">
-<p class="lab">High Performance Manager · Surfing, Skate, Paddle and Triathlon · October 2026</p>
-<h1>Interview Folder</h1>
-<p class="sub">Simon Thomas · Application, preparation and visit documents in one place</p>
+<p class="eyebrow">Interview folder · High Performance Manager · October 2026</p>
+<h1>Every QAS document in one place.</h1>
+<p class="lede">Application, preparation and visit documents for the Surfing, Skate, Paddle and Triathlon role. Choose a document and it opens on screen.</p>
 </div></header>
-<main class="wrap"><div class="grid" id="grid"></div></main>
-<footer>Simon Thomas · ST Performance Global · Select a tile to open the document</footer>
+<main class="wrap">
+<div class="section-head"><h2>The documents</h2><span class="count" id="count"></span></div>
+<div class="grid" id="grid"></div>
+</main>
+<footer><div class="wrap"><span>Simon Thomas · ST Performance Global</span><span>Start with the athlete · Our people. Our superpower.</span></div></footer>
 
 <div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-labelledby="vt">
 <div class="bar"><span class="t" id="vt"></span>
@@ -64,20 +81,22 @@ iframe{flex:1;width:100%;border:0;background:#fff}
 
 <script>
 const DOCS=[
- {f:"one-page-response",kind:"Application · 1 page",name:"One Page Response",desc:"Why I am suited to the role, written against the QAS values.",c:"#981C41"},
- {f:"role-fit-analysis",kind:"Application · 3 pages",name:"Role Fit Analysis",desc:"Supporting document mapping experience to the role criteria.",c:"#6F1530"},
- {f:"wittw-knowledge-sheet",kind:"Knowledge · 1 page",name:"WITTW Knowledge Sheet",desc:"What It Takes To Win: the framework, its language and how QAS uses it.",c:"#C2992F"},
- {f:"first-90-days-slides",kind:"Presentation · 8 slides",name:"First 90 Days",desc:"Panel presentation: listen, map, connect, agree and review.",c:"#111214",wide:true},
- {f:"role-summary",kind:"Role · 1 page",name:"Role Summary",desc:"Where the role sits, what it does, who it works with and remuneration.",c:"#156082"},
- {f:"categorisation-lens-matrix",kind:"Framework · 2 pages",name:"Categorisation Lens Matrix",desc:"Five lenses weighted across the national categorisation levels.",c:"#1E7A8C"},
- {f:"visit-brief",kind:"Visit · 5 pages",name:"Visit Brief",desc:"Fact sheets on surfing, skateboarding, paddle, triathlon and QAS.",c:"#2E6E5E"}
+ {f:"one-page-response",art:"Response",kind:"Application",pages:"1 page",name:"One Page Response",desc:"Why I am suited to the role, written against the QAS values.",c:"#981C41",c2:"#981C41"},
+ {f:"role-fit-analysis",art:"Role fit",kind:"Application",pages:"3 pages",name:"Role Fit Analysis",desc:"The supporting document that maps experience against each of the role criteria.",c:"#6F1530",c2:"#6F1530"},
+ {f:"wittw-knowledge-sheet",art:"WITTW",kind:"Knowledge",pages:"1 page",name:"WITTW Knowledge Sheet",desc:"What It Takes To Win: the framework, its language and how it drives investment.",c:"#2E6E5E",c2:"#2E6E5E"},
+ {f:"first-90-days-slides",art:"First 90 days",kind:"Presentation",pages:"8 slides",name:"First 90 Days Slides",desc:"The panel presentation: listen, map, connect, agree and review.",c:"#111214",c2:"#111214",wide:true},
+ {f:"role-summary",art:"Role summary",kind:"Role",pages:"1 page",name:"Role Summary",desc:"Where the role sits, what it does, who it works with and the remuneration.",c:"#156082",c2:"#156082"},
+ {f:"categorisation-lens-matrix",art:"Lens matrix",kind:"Framework",pages:"2 pages",name:"Categorisation Lens Matrix",desc:"Five lenses weighted across the national athlete categorisation levels.",c:"#1E5468",c2:"#1E5468"},
+ {f:"visit-brief",art:"Visit brief",kind:"Visit",pages:"5 pages",name:"Visit Brief",desc:"Fact sheets on surfing, skateboarding, paddle, triathlon and QAS for the in-person visit.",c:"#2A2C30",c2:"#8A6A17",featured:true}
 ];
 const grid=document.getElementById('grid'),V=document.getElementById('viewer'),F=document.getElementById('vf');
 let last=null;
+document.getElementById('count').textContent=DOCS.length+' documents';
 DOCS.forEach(d=>{
- const b=document.createElement('button');b.className='tile';b.style.setProperty('--c',d.c);
- b.innerHTML=`<div class="thumb${d.wide?' wide':''}" style="background-image:url('thumbs/${d.f}.png')"></div><div class="meta"><span class="kind">${d.kind}</span><span class="name">${d.name}</span><span class="desc">${d.desc}</span></div>`;
- b.onclick=()=>openDoc(d,b);grid.appendChild(b);
+ const t=document.createElement('article');t.className='tile'+(d.featured?' featured':'');t.style.setProperty('--c',d.c);t.style.setProperty('--c2',d.c2);
+ t.innerHTML=`<div class="art"><img class="${d.wide?'wide':''}" src="thumbs/${d.f}.png" alt=""><span>${d.art}</span></div><div class="body"><div><span class="org">QAS interview · ${d.kind}</span><h3>${d.name}</h3></div><p class="desc">${d.desc}</p><div class="tags"><span class="tag">${d.pages}</span><span class="tag">PDF</span></div><button class="open" type="button">Open document <span class="arrow">→</span></button></div>`;
+ const btn=t.querySelector('.open');btn.onclick=()=>openDoc(d,btn);t.querySelector('.art').onclick=()=>openDoc(d,btn);t.querySelector('.art').style.cursor='pointer';
+ grid.appendChild(t);
 });
 const TOUCH=matchMedia('(hover: none)').matches;
 function openDoc(d,b){
