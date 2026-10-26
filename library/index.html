@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QAS Interview Folder</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#111214;--silver:#A7ACB1;--gold:#C2992F;--pou:#2E6E5E;--mar:#981C41;--blue:#156082;--text:#2B2F33;--mute:#6B7178;--rule:#DADDE0;--tint:#F4F4F2;--bg:#ECECE9;--card:#fff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.rule{display:flex;height:6px}.rule i{flex:1}
+.rule i:nth-child(1){background:var(--ink)}.rule i:nth-child(2){background:var(--silver)}.rule i:nth-child(3){background:var(--gold)}.rule i:nth-child(4){background:var(--pou)}
+header{background:var(--ink);color:#fff;padding:26px 16px 24px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+header .wrap{padding:0}
+.lab{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--silver)}
+h1{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:clamp(38px,7vw,64px);line-height:.95;text-transform:uppercase;margin:8px 0 6px}
+.sub{color:#C9CDD1;font-size:14px}
+main{padding:24px 0 40px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+.tile{all:unset;cursor:pointer;display:flex;flex-direction:column;background:var(--card);border-top:5px solid var(--c);box-shadow:0 1px 2px rgba(0,0,0,.08);transition:transform .15s,box-shadow .15s;overflow:hidden}
+.tile:hover,.tile:focus-visible{transform:translateY(-3px);box-shadow:0 8px 22px rgba(0,0,0,.14)}
+.tile:focus-visible{outline:3px solid var(--c);outline-offset:2px}
+.thumb{height:210px;background:var(--tint) center top/cover no-repeat;border-bottom:1px solid var(--rule)}
+.thumb.wide{background-size:contain;background-position:center;background-color:var(--ink)}
+.meta{padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px;flex:1}
+.kind{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:var(--c)}
+.name{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:25px;line-height:1;text-transform:uppercase;color:var(--ink)}
+.desc{font-size:13px;color:var(--mute);line-height:1.4}
+footer{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--mute);text-align:center;padding:0 16px 28px}
+/* viewer */
+.viewer{position:fixed;inset:0;background:rgba(17,18,20,.86);display:none;flex-direction:column;z-index:10}
+.viewer.on{display:flex}
+.bar{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--ink);color:#fff;border-top:5px solid var(--vc,var(--gold))}
+.bar .t{font-family:'Big Shoulders Display',sans-serif;font-weight:800;font-size:22px;text-transform:uppercase;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar a,.bar button{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#fff;background:transparent;border:1px solid #5A5F66;padding:7px 10px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.bar a:hover,.bar button:hover{border-color:#fff}
+.frame{flex:1;padding:12px;display:flex}
+iframe{flex:1;width:100%;border:0;background:#fff}
+@media (max-width:600px){.bar a.dl{display:none}.thumb{height:180px}}
+</style>
+</head>
+<body>
+<div class="rule"><i></i><i></i><i></i><i></i></div>
+<header><div class="wrap">
+<p class="lab">High Performance Manager · Surfing, Skate, Paddle and Triathlon · October 2026</p>
+<h1>Interview Folder</h1>
+<p class="sub">Simon Thomas · Application, preparation and visit documents in one place</p>
+</div></header>
+<main class="wrap"><div class="grid" id="grid"></div></main>
+<footer>Simon Thomas · ST Performance Global · Select a tile to open the document</footer>
+
+<div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-labelledby="vt">
+<div class="bar"><span class="t" id="vt"></span>
+<a id="vopen" target="_blank" rel="noopener">Full screen</a>
+<a id="vdl" class="dl" download>Download</a>
+<button id="vclose" type="button">Close ✕</button></div>
+<div class="frame"><iframe id="vf" title="Document viewer"></iframe></div>
+</div>
+
+<script>
+const DOCS=[
+ {f:"one-page-response",kind:"Application · 1 page",name:"One Page Response",desc:"Why I am suited to the role, written against the QAS values.",c:"#981C41"},
+ {f:"role-fit-analysis",kind:"Application · 3 pages",name:"Role Fit Analysis",desc:"Supporting document mapping experience to the role criteria.",c:"#6F1530"},
+ {f:"wittw-knowledge-sheet",kind:"Knowledge · 1 page",name:"WITTW Knowledge Sheet",desc:"What It Takes To Win: the framework, its language and how QAS uses it.",c:"#C2992F"},
+ {f:"first-90-days-slides",kind:"Presentation · 8 slides",name:"First 90 Days",desc:"Panel presentation: listen, map, connect, agree and review.",c:"#111214",wide:true},
+ {f:"role-summary",kind:"Role · 1 page",name:"Role Summary",desc:"Where the role sits, what it does, who it works with and remuneration.",c:"#156082"},
+ {f:"categorisation-lens-matrix",kind:"Framework · 2 pages",name:"Categorisation Lens Matrix",desc:"Five lenses weighted across the national categorisation levels.",c:"#1E7A8C"},
+ {f:"visit-brief",kind:"Visit · 5 pages",name:"Visit Brief",desc:"Fact sheets on surfing, skateboarding, paddle, triathlon and QAS.",c:"#2E6E5E"}
+];
+const grid=document.getElementById('grid'),V=document.getElementById('viewer'),F=document.getElementById('vf');
+let last=null;
+DOCS.forEach(d=>{
+ const b=document.createElement('button');b.className='tile';b.style.setProperty('--c',d.c);
+ b.innerHTML=`<div class="thumb${d.wide?' wide':''}" style="background-image:url('thumbs/${d.f}.png')"></div><div class="meta"><span class="kind">${d.kind}</span><span class="name">${d.name}</span><span class="desc">${d.desc}</span></div>`;
+ b.onclick=()=>openDoc(d,b);grid.appendChild(b);
+});
+const TOUCH=matchMedia('(hover: none)').matches;
+function openDoc(d,b){
+ last=b;const u='docs/'+d.f+'.pdf';
+ if(TOUCH){window.open(u,'_blank','noopener');return;}
+ document.getElementById('vt').textContent=d.name;
+ document.getElementById('vopen').href=u;
+ const dl=document.getElementById('vdl');dl.href=u;dl.setAttribute('download','Simon Thomas '+d.name+'.pdf');
+ V.style.setProperty('--vc',d.c);F.src=u+'#view=FitH';V.classList.add('on');document.body.style.overflow='hidden';
+ document.getElementById('vclose').focus();
+}
+function closeDoc(){V.classList.remove('on');F.src='about:blank';document.body.style.overflow='';if(last)last.focus();}
+document.getElementById('vclose').onclick=closeDoc;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&V.classList.contains('on'))closeDoc();});
+</script>
+</body>
+</html>
