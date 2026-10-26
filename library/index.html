@@ -57,7 +57,7 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
 iframe{flex:1;width:100%;border:0;background:#fff;border-radius:6px}
 @media (max-width:600px){.bar a.dl{display:none}}
 .lock{width:64px;height:64px;color:#fff;opacity:.92}
-.gate{position:fixed;inset:0;background:rgba(17,18,20,.86);display:none;place-items:center;padding:16px;z-index:11}
+.gate{position:fixed;inset:0;background:rgba(17,18,20,.97);display:none;place-items:center;padding:16px;z-index:11}
 .gate.on{display:grid}
 .gbox{width:min(400px,100%);background:#fff;border-radius:16px;overflow:hidden;border-top:5px solid var(--gold)}
 .gbox .gh{background:var(--ink);color:#fff;padding:16px 18px}
@@ -94,13 +94,14 @@ iframe{flex:1;width:100%;border:0;background:#fff;border-radius:6px}
 <div class="frame"><iframe id="vf" title="Document viewer"></iframe></div>
 </div>
 
-<div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gt">
-<div class="gbox"><div class="gh"><b id="gt">Decision Framework</b><span>Private · enter the password</span></div>
+<div class="gate on" id="gate" role="dialog" aria-modal="true" aria-labelledby="gt">
+<div class="gbox"><div class="gh"><b id="gt">Interview Folder</b><span>Enter the password to open the folder</span></div>
 <form id="gform"><input id="gpw" type="password" autocomplete="current-password" placeholder="Password" aria-label="Password">
 <div class="gmsg" id="gmsg"></div>
-<div class="row"><button class="gbtn alt" type="button" id="gcancel">Cancel</button><button class="gbtn" type="submit" id="gok">Unlock</button></div></form></div></div>
+<button class="gbtn" type="submit" id="gok">Unlock</button></form></div></div>
 
 <script>
+const SALT="5064ded5bd5fb33d2a3b80dc6dd2f095";
 const DOCS=[
  {f:"one-page-response",art:"Response",kind:"Application",pages:"1 page",name:"One Page Response",desc:"Why I am suited to the role, written against the QAS values.",c:"#981C41",c2:"#981C41"},
  {f:"role-fit-analysis",art:"Role fit",kind:"Application",pages:"3 pages",name:"Role Fit Analysis",desc:"The supporting document that maps experience against each of the role criteria.",c:"#6F1530",c2:"#6F1530"},
@@ -109,51 +110,59 @@ const DOCS=[
  {f:"role-summary",art:"Role summary",kind:"Role",pages:"1 page",name:"Role Summary",desc:"Where the role sits, what it does, who it works with and the remuneration.",c:"#156082",c2:"#156082"},
  {f:"categorisation-lens-matrix",art:"Lens matrix",kind:"Framework",pages:"2 pages",name:"Categorisation Lens Matrix",desc:"Five lenses weighted across the national athlete categorisation levels.",c:"#1E5468",c2:"#1E5468"},
  {f:"visit-brief",art:"Visit brief",kind:"Visit",pages:"5 pages",name:"Visit Brief",desc:"Fact sheets on surfing, skateboarding, paddle, triathlon and QAS for the in-person visit.",c:"#2A2C30",c2:"#8A6A17",featured:true},
- {f:"decision-framework",art:"Private",kind:"Personal",pages:"4 pages",name:"Decision Framework",desc:"Six checks for fit, the money and the move, questions for QAS and the environments to test over the two days.",c:"#1F4A40",c2:"#1F4A40",locked:true}
+ {f:"two-day-visit-framework",art:"Visit framework",kind:"Visit",pages:"4 pages",name:"2 Day Visit Framework",desc:"Six checks for fit, the money and the move, questions for QAS and the environments to test over the two days.",c:"#1F4A40",c2:"#1F4A40"}
 ];
 const grid=document.getElementById('grid'),V=document.getElementById('viewer'),F=document.getElementById('vf');
-let last=null;
-document.getElementById('count').textContent=DOCS.length+' documents';
-DOCS.forEach(d=>{
- const t=document.createElement('article');t.className='tile'+(d.featured?' featured':'');t.style.setProperty('--c',d.c);t.style.setProperty('--c2',d.c2);
- const LOCK='<svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.3"/></svg>';
- t.innerHTML=`<div class="art">${d.locked?LOCK:`<img class="${d.wide?'wide':''}" src="thumbs/${d.f}.png" alt="">`}<span>${d.art}</span></div><div class="body"><div><span class="org">QAS interview · ${d.kind}</span><h3>${d.name}</h3></div><p class="desc">${d.desc}</p><div class="tags"><span class="tag">${d.pages}</span><span class="tag">${d.locked?'Password':'PDF'}</span></div><button class="open" type="button">Open document <span class="arrow">→</span></button></div>`;
- const btn=t.querySelector('.open');btn.onclick=()=>openDoc(d,btn);t.querySelector('.art').onclick=()=>openDoc(d,btn);t.querySelector('.art').style.cursor='pointer';
- grid.appendChild(t);
-});
+const G=document.getElementById('gate'),GP=document.getElementById('gpw'),GM=document.getElementById('gmsg');
 const TOUCH=matchMedia('(hover: none)').matches;
-let unlocked=null;
-function openDoc(d,b){
- if(d.locked&&!unlocked){last=b;showGate(d);return;}
- last=b;const u=d.locked?unlocked:'docs/'+d.f+'.pdf';
- if(TOUCH){window.open(u,'_blank','noopener');return;}
+let KEY=null,last=null;const cache={};
+document.body.style.overflow='hidden';
+const hex=h=>new Uint8Array(h.match(/../g).map(x=>parseInt(x,16)));
+async function getBytes(path){
+ const buf=new Uint8Array(await (await fetch(path,{cache:'no-store'})).arrayBuffer());
+ return crypto.subtle.decrypt({name:'AES-GCM',iv:buf.slice(0,12)},KEY,buf.slice(12));
+}
+async function blobUrl(path,type){if(!cache[path])cache[path]=URL.createObjectURL(new Blob([await getBytes(path)],{type}));return cache[path];}
+async function deriveKey(pw){
+ const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);
+ return crypto.subtle.deriveKey({name:'PBKDF2',salt:hex(SALT),iterations:250000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},true,['decrypt']);
+}
+async function unlock(k){KEY=k;await getBytes('check.bin');}
+function build(){
+ document.getElementById('count').textContent=DOCS.length+' documents';
+ DOCS.forEach(d=>{
+  const t=document.createElement('article');t.className='tile'+(d.featured?' featured':'');t.style.setProperty('--c',d.c);t.style.setProperty('--c2',d.c2);
+  t.innerHTML=`<div class="art"><img class="${d.wide?'wide':''}" alt=""><span>${d.art}</span></div><div class="body"><div><span class="org">QAS interview · ${d.kind}</span><h3>${d.name}</h3></div><p class="desc">${d.desc}</p><div class="tags"><span class="tag">${d.pages}</span><span class="tag">PDF</span></div><button class="open" type="button">Open document <span class="arrow">→</span></button></div>`;
+  const btn=t.querySelector('.open'),art=t.querySelector('.art');btn.onclick=()=>openDoc(d,btn);art.onclick=()=>openDoc(d,btn);art.style.cursor='pointer';
+  blobUrl('thumbs/'+d.f+'.bin','image/png').then(u=>t.querySelector('img').src=u).catch(()=>{});
+  grid.appendChild(t);
+  if(TOUCH)blobUrl('docs/'+d.f+'.bin','application/pdf').then(u=>{d.url=u}).catch(()=>{});
+ });
+}
+function done(){G.classList.remove('on');document.body.style.overflow='';build();}
+document.getElementById('gform').onsubmit=async e=>{
+ e.preventDefault();GM.style.color='var(--mute)';GM.textContent='Unlocking…';
+ try{const k=await deriveKey(GP.value);await unlock(k);
+  try{sessionStorage.setItem('qasf',btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.exportKey('raw',k)))));}catch(_){}
+  done();}
+ catch(err){KEY=null;GM.style.color='var(--mar)';GM.textContent='That password did not work. Try again.';GP.select();}
+};
+(async()=>{try{const r=sessionStorage.getItem('qasf');if(!r)return;
+ const k=await crypto.subtle.importKey('raw',Uint8Array.from(atob(r),c=>c.charCodeAt(0)),'AES-GCM',false,['decrypt']);await unlock(k);done();}catch(_){KEY=null;}})();
+setTimeout(()=>{if(G.classList.contains('on'))GP.focus()},60);
+async function openDoc(d,b){
+ last=b;
+ if(TOUCH){if(d.url){window.open(d.url,'_blank','noopener');}else{b.textContent='Preparing…';d.url=await blobUrl('docs/'+d.f+'.bin','application/pdf');b.innerHTML='Tap again to open <span class="arrow">→</span>';}return;}
+ const u=await blobUrl('docs/'+d.f+'.bin','application/pdf');
  document.getElementById('vt').textContent=d.name;
  document.getElementById('vopen').href=u;
  const dl=document.getElementById('vdl');dl.href=u;dl.setAttribute('download','Simon Thomas '+d.name+'.pdf');
  V.style.setProperty('--vc',d.c);F.src=u+'#view=FitH';V.classList.add('on');document.body.style.overflow='hidden';
  document.getElementById('vclose').focus();
 }
-const G=document.getElementById('gate'),GP=document.getElementById('gpw'),GM=document.getElementById('gmsg');let gdoc=null;
-function showGate(d){gdoc=d;GM.textContent='';GP.value='';G.classList.add('on');document.body.style.overflow='hidden';setTimeout(()=>GP.focus(),50);}
-function hideGate(){G.classList.remove('on');document.body.style.overflow='';if(last)last.focus();}
-document.getElementById('gcancel').onclick=hideGate;
-async function decrypt(pw){
- const buf=new Uint8Array(await (await fetch('docs/'+gdoc.f+'.bin',{cache:'no-store'})).arrayBuffer());
- const salt=buf.slice(0,16),iv=buf.slice(16,28),ct=buf.slice(28);
- const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);
- const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:250000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);
- const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv},key,ct);
- return URL.createObjectURL(new Blob([pt],{type:'application/pdf'}));
-}
-document.getElementById('gform').onsubmit=async e=>{
- e.preventDefault();GM.style.color='var(--mute)';GM.textContent='Unlocking…';
- try{unlocked=await decrypt(GP.value);}catch(err){GM.style.color='var(--mar)';GM.textContent='That password did not work. Try again.';GP.select();return;}
- if(TOUCH){GM.style.color='var(--pou)';GM.innerHTML='Unlocked. <a href="'+unlocked+'" target="_blank" rel="noopener" style="color:var(--pou);font-weight:600">Open the document</a>';return;}
- G.classList.remove('on');openDoc(gdoc,last);
-};
-function closeDoc(){V.classList.remove('on');F.src='about:blank';G.classList.remove('on');document.body.style.overflow='';if(last)last.focus();}
+function closeDoc(){V.classList.remove('on');F.src='about:blank';document.body.style.overflow='';if(last)last.focus();}
 document.getElementById('vclose').onclick=closeDoc;
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(G.classList.contains('on'))hideGate();else if(V.classList.contains('on'))closeDoc();}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&V.classList.contains('on'))closeDoc();});
 </script>
 </body>
 </html>
